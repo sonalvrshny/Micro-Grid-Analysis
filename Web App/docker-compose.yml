@@ -1,0 +1,36 @@
+version: '2'
+
+services:
+  web:
+    build: ./keras
+    ports:
+      - "5000:5000"
+      - "5001:5001"
+    depends_on:
+      - redis
+    volumes:
+      - ./keras/app:/code
+      - site-packages:/usr/local/lib/python3.7/site-packages
+    links:
+      - db
+  db:
+    image: mongo:3.0.2
+    expose:
+      - 27017
+    volumes:
+      - ./localFolder:/data/db
+  redis:
+    image: redis
+  frontend:
+    build: ./frontend
+    command: ["npm", "start"]
+    volumes:
+      - ./frontend:/app/frontend
+      - node-modules:/app/frontend/node_modules
+    ports:
+      - "3000:3000"
+
+volumes:
+  node-modules:
+  site-packages:
+    driver: local
